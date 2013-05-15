@@ -52,10 +52,20 @@ $(function() {
       maxPosition = links.length - 1;
       for (var i = 0; i <= maxPosition; i++) {
         var link = links[i];
-        var page = '<div id="' + baseLinkId + i + '" class="row-fluid"><a class="span12" target="_blank" href><h3>' + (i + 1) + '. ' + link.title + '</h3><div class="url">' + link.url + '</div><img src="' + link.url + '" /></a></div>';
+        var page = '<div id="' + baseLinkId + i + '" class="row-fluid"><a class="span12" target="_blank" href><h3>' + (i + 1) + '. ' + link.title + '</h3><div class="url">' + link.url + '</div><img src="' + link.url + '" /></a><span class="comments">' + link.comments[0].text + '</span></div>';
         $container.append(page);
         // when to use a tag instead of iframe, a href should be encoded url and encoded search keywords
       }
+      setInterval(function() { // TODO clearInterval
+        $('span.comments').each(function() {
+          $this = $(this);
+          var coordinate = $this.offset();
+          if ($this.width() + coordinate.left > 0) {
+            coordinate.left -= 20;
+            $this.offset(coordinate);
+          }
+        });
+      }, 100);
       $('div.row-fluid').waypoint(function(e, direction) {
         curHash = $(this).attr('id');
         // waypoint bug, with offset it does not fire the event correctly

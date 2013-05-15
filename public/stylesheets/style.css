@@ -44,6 +44,19 @@ img {
   overflow: hidden;
 }
 
+span.comments {
+  position: relative;
+  left: 100%;
+  color: white;
+  font-size: 2em;
+  text-shadow:
+     3px  2px 0 #000,
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
+}
+
 /* http://tympanus.net/codrops/2012/11/14/creative-css-loading-animations/ */
 .spinner {
   /* Size and position */
