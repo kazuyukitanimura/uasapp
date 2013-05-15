@@ -1,0 +1,22 @@
+{
+  "name": "searchview"
+, "version": "0.0.1"
+, "private": true
+, "scripts": {
+    "start": "node app"
+  , "test": "mocha"
+  }
+, "dependencies": {
+    "express": ">= 3.2.4"
+  , "ejs": ">= 0.8.4"
+  }
+, "engine": "node >= 0.10.5"
+, "author": {
+    "name": "kazuyukitanimura",
+    "email": "kazuyukitanimura@gmail.com"
+  }
+, "repository": {
+    "type": "git",
+    "url": "git://github.com/kazuyukitanimura/uasapp.git"
+  }
+}
