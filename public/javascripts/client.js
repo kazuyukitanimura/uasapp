@@ -52,20 +52,52 @@ $(function() {
       maxPosition = links.length - 1;
       for (var i = 0; i <= maxPosition; i++) {
         var link = links[i];
-        var page = '<div id="' + baseLinkId + i + '" class="row-fluid"><a class="span12" target="_blank" href><h3>' + (i + 1) + '. ' + link.title + '</h3><div class="url">' + link.url + '</div><img src="' + link.url + '" /></a><span class="comments">' + link.comments[0].text + '</span></div>';
+        var page = ['<div id="', baseLinkId, i, '" class="row-fluid">',
+                      '<a class="span12" target="_blank" href>',
+                        '<h3>', (i + 1), '. ', link.title, '</h3>',
+                        '<div class="url">', link.url, '</div>',
+                        '<img src="', link.url, '" />',
+                      '</a>',
+                      '<form class="input-append">',
+                        '<input class="ballon-input" type="text">',
+                        '<input class="btn" type="submit" value="Ballon">',
+                        '<label>Remove after</label>',
+                        '<input class="rmsec" type="number" value="5.0">',
+                        '<span class="add-on">sec</span>',
+                      '</form>',
+                    '</div>'].join('');
         $container.append(page);
         // when to use a tag instead of iframe, a href should be encoded url and encoded search keywords
       }
-      setInterval(function() { // TODO clearInterval
-        $('span.comments').each(function() {
-          $this = $(this);
-          var coordinate = $this.offset();
-          if ($this.width() + coordinate.left > 0) {
-            coordinate.left -= 20;
-            $this.offset(coordinate);
-          }
-        });
-      }, 100);
+      var rand = function(max, min) {
+        if (!min) {
+          min = 0;
+        }
+        return Math.floor(Math.random() * (max + 1)) + min;
+      };
+      var rmFunc = function() {
+        this.remove();
+      };
+      $('.input-append').submit(function() {
+        var $this = $(this);
+        var $ballon = $this.find('.ballon-input');
+        var rmsec = parseFloat($this.find('.rmsec').val()) * 1000;
+        var $comment = $(['<div class="comments" style="top:', rand(100), '%; left:', rand(100), '%;">', $ballon.val(), '</div>'].join(''));
+        setTimeout(rmFunc.bind($comment), rmsec);
+        $this.after($comment);
+        $ballon.val('').focus();
+        return false;
+      });
+      //setInterval(function() { // TODO clearInterval
+      //  $('span.comments').each(function() {
+      //    $this = $(this);
+      //    var coordinate = $this.offset();
+      //    if ($this.width() + coordinate.left > 0) {
+      //      coordinate.left -= 20;
+      //      $this.offset(coordinate);
+      //    }
+      //  });
+      //}, 100);
       $('div.row-fluid').waypoint(function(e, direction) {
         curHash = $(this).attr('id');
         // waypoint bug, with offset it does not fire the event correctly

@@ -9,6 +9,7 @@ body {
   background: radial-gradient(ellipse at center,  rgba(214,214,214,1) 0%,rgba(186,186,186,1) 100%); /* W3C */
 }
 div.row-fluid {
+  position: relative;
   padding-top: 20px;
 }
 
@@ -44,9 +45,8 @@ img {
   overflow: hidden;
 }
 
-span.comments {
-  position: relative;
-  left: 100%;
+div.comments {
+  position: absolute;
   color: white;
   font-size: 2em;
   text-shadow:
