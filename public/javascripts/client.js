@@ -82,7 +82,7 @@ $(function() {
         var $this = $(this);
         var $input = $this.find('.bubble-input');
         var rmsec = parseFloat($this.find('.rmsec').val()) * 1000;
-        var $bubble = $(['<div class="bubble" style="top:', rand(100), '%; left:', rand(100), '%;">', $input.val(), '</div>'].join(''));
+        var $bubble = $(['<div class="bubble animated bounce" style="top:', rand(100), '%; left:', rand(100), '%;">', $input.val(), '</div>'].join(''));
         setTimeout(rmFunc.bind($bubble), rmsec);
         $this.after($bubble);
         $input.val('').focus();
