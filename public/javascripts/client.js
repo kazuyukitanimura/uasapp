@@ -59,8 +59,8 @@ $(function() {
                         '<img src="', link.url, '" />',
                       '</a>',
                       '<form class="input-append">',
-                        '<input class="ballon-input" type="text">',
-                        '<input class="btn" type="submit" value="Ballon">',
+                        '<input class="bubble-input" type="text">',
+                        '<input class="btn" type="submit" value="Bubble">',
                         '<label>Remove after</label>',
                         '<input class="rmsec" type="number" value="5.0">',
                         '<span class="add-on">sec</span>',
@@ -80,12 +80,12 @@ $(function() {
       };
       $('.input-append').submit(function() {
         var $this = $(this);
-        var $ballon = $this.find('.ballon-input');
+        var $input = $this.find('.bubble-input');
         var rmsec = parseFloat($this.find('.rmsec').val()) * 1000;
-        var $comment = $(['<div class="comments" style="top:', rand(100), '%; left:', rand(100), '%;">', $ballon.val(), '</div>'].join(''));
-        setTimeout(rmFunc.bind($comment), rmsec);
-        $this.after($comment);
-        $ballon.val('').focus();
+        var $bubble = $(['<div class="bubble" style="top:', rand(100), '%; left:', rand(100), '%;">', $input.val(), '</div>'].join(''));
+        setTimeout(rmFunc.bind($bubble), rmsec);
+        $this.after($bubble);
+        $input.val('').focus();
         return false;
       });
       //setInterval(function() { // TODO clearInterval
