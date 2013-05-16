@@ -57,6 +57,10 @@ div.bubble {
      1px  1px 0 #000;
   padding: 5px;
   background-color: rgba(0,0,0,0.2);
+  border: 1px solid black;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
 }
 
 /* http://tympanus.net/codrops/2012/11/14/creative-css-loading-animations/ */
