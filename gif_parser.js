@@ -53,8 +53,8 @@ Consumable.prototype.consume16LE = function() {
     chunk.pos += 2;
     return chunk.readUInt16LE(pos);
   } else {
-    var lower = consume8(); // little endian
-    return (consume8() << 8) | lower;
+    var lower = this.consume8(); // little endian
+    return (this.consume8() << 8) | lower;
   }
 };
 Consumable.prototype.consume16BE = function() {
@@ -64,7 +64,7 @@ Consumable.prototype.consume16BE = function() {
     chunk.pos += 2;
     return chunk.readUInt16BE(pos);
   } else {
-    return (consume8() << 8) | consume8();
+    return (this.consume8() << 8) | this.consume8();
   }
 };
 Consumable.prototype.consume32BE = function() {
@@ -74,7 +74,7 @@ Consumable.prototype.consume32BE = function() {
     chunk.pos += 4;
     return chunk.readUInt32BE(pos);
   } else {
-    return (consume16BE() << 16) | consume16BE();
+    return (this.consume16BE() << 16) | this.consume16BE();
   }
 };
 Consumable.prototype.waste = function(size) {
@@ -105,7 +105,6 @@ var Gify = module.exports = function(sourceStream, callback) {
   if (! (this instanceof Gify)) { // enforcing new
     return new Gify(sourceStream, callback);
   }
-  sourceStream.on('readable', this.step).on('error', this._finish).on('end', this._finish);
   this.cs = new Consumable(sourceStream);
   this.step = this._readHeader;
   this.withdrawLen = 10;
@@ -117,6 +116,7 @@ var Gify = module.exports = function(sourceStream, callback) {
     duration: 0,
   };
   this.cb = callback;
+  sourceStream.on('readable', this.step).on('error', this._finish).on('end', this._finish);
 };
 
 Gify.prototype._finish = function(err) {
