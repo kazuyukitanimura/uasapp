@@ -87,19 +87,7 @@ Consumable.prototype.waste = function(size) {
 
 var getPaletteSize = function(palette) {
   return (palette & 0x80) ? 3 * (2 << (palette & 0x07)) : 0;
-}
-var getDuration = function(duration) {
-  return duration * 10; // in milisec, the original accuracy is 1/100
-}
-var getSubBlockSize = function(cs, pos) {
-  var totalSize = 0;
-  var size = 0;
-  do {
-    size = cs.getUint8(pos + totalSize, true);
-    totalSize += size + 1;
-  } while (size > 0);
-  return totalSize;
-}
+};
 
 var Gify = module.exports = function(sourceStream, callback) {
   if (! (this instanceof Gify)) { // enforcing new
@@ -113,12 +101,11 @@ var Gify = module.exports = function(sourceStream, callback) {
     height: 0,
     width: 0,
     frames: 0,
-    duration: 0,
+    duration: 0
   };
   this.cb = callback;
   sourceStream.on('readable', this.step).on('error', this._finish).on('end', this._finish);
 };
-
 Gify.prototype._finish = function(err) {
   if (this.step) { // fire only once
     if (!err && ! this.info.valid) {
@@ -128,87 +115,88 @@ Gify.prototype._finish = function(err) {
   }
   this.step = null;
 };
-
-Gify.prototype._readHeader = function() {
+Gify.prototype._reader = function(callback) {
   var cs = this.cs;
   if (cs.withdraw(this.withdrawLen)) {
+    callback(cs);
+    this.step();
+  }
+};
+Gify.prototype._readHeader = function() {
+  this._reader(function(cs) {
     // check if GIF8
     if (cs.consume32BE() != 0x47494638) {
       this._finish();
+      return;
     }
-
     // get height/width
     this.info.height = cs.consume16LE();
     this.info.width = cs.consume16LE();
-
     //parse global palette
-    var globalPalette = cs.consume8();
-    this.withdrawLen = getPaletteSize(globalPalette) + 2; // skipping bg color and aspect ratio
-
-    this.step = this._readPalette;
-    this.step();
-  }
+    this.withdrawLen = getPaletteSize(cs.consume8()) + 2; // skipping bg color and aspect ratio
+    this.step = this._readWaste;
+  });
 };
-
-Gify.prototype._readPalette = function() {
-  var cs = this.cs;
-  if (cs.withdraw(this.withdrawLen)) {
+Gify.prototype._readWaste = function() {
+  this._reader(function(cs) {
     cs.waste(this.withdrawLen);
-
-    this.step = this._readExtention;
-    this.step();
-  }
+    this.withdrawLen = 1;
+    this.step = this._readBlock;
+  });
 };
-
-Gify.prototype.getInfo = function() {
-
-  while (true) {
-    try {
-      var block = this.cs.getUint8(this.pos, true);
-
-      if (block === 0x21) {
-        // EXTENSION BLOCK
-        var type = this.cs.getUint8(this.pos + 1, true);
-        if (type === 0xF9) {
-          var length = this.cs.getUint8(this.pos + 2);
-          if (length === 4) {
-            this.info.duration += getDuration(this.cs.getUint16(this.pos + 4, true));
-
-            // increment frame count
-            this.info.frames++;
-            this.pos += 8;
-          } else {
-            this.pos++;
-          }
-        } else { // AEB, CEB, PTEB, ETC
-          this.pos += 2;
-          this.pos += getSubBlockSize(this.cs, this.pos);
-        }
-      } else if (block === 0x2C) {
-        // IMAGE BLOCK
-        // parse local palette
-        var localPalette = this.cs.getUint8(this.pos + 9, true);
-        this.pos += getPaletteSize(localPalette);
-        this.pos += 11;
-        this.pos += getSubBlockSize(this.cs, this.pos);
-      } else if (block === 0x3B) {
-        // TRAILER BLOCK (THE END)
-        break;
+Gify.prototype._readBlock = function() {
+  this._reader(function(cs) {
+    var block = cs.consume8();
+    if (block === 0x21) { // EXTENSION BLOCK
+      this.withdrawLen = 5;
+      this.step = this._readExtention;
+    } else if (block === 0x2C) { // IMAGE BLOCK
+      this.withdrawLen = 10;
+      this.step = this._readImage;
+    } else if (block === 0x3B) { // TRAILER BLOCK (THE END)
+      this.info.valid = true;
+      this._finish();
+    } else { // UNKNOWN BLOCK (bad)
+      this._finish();
+    }
+  });
+};
+Gify.prototype._readExtention = function() {
+  this._reader(function(cs) {
+    if (cs.consume8() === 0xF9) {
+      if (cs.consume8() === 4) {
+        cs.waste(1);
+        this.info.duration += cs.consume16LE() * 10; // in milisec, the original accuracy is 1/100 sec
+        this.info.frames++; // increment frame count
+        this.withdrawLen = 8;
+        this.step = this._readWaste;
       } else {
-        // UNKNOWN BLOCK (bad)
-        this.pos++;
+        cs.waste(1);
+        this.withdrawLen = 1;
+        this.step = this._readBlock;
       }
-    } catch(e) {
-      return this.info;
+    } else { // AEB, CEB, PTEB, ETC
+      cs.waste(2);
+      this.withdrawLen = 1;
+      this.step = this._readSubBlock;
     }
-
-    // this shouldn't happen, but if the trailer block is missing, we should bail at EOF
-    if (this.pos >= sourceArrayBuffer.byteLength) {
-      break;
-    }
-  }
-
-  this.info.valid = true;
-  return this.info;
+  });
 };
-
+Gify.prototype._readSubBlock = function() {
+  this._reader(function(cs) {
+    cs.waste(this.withdrawLen - 1);
+    var size = cs.consume8();
+    this.withdrawLen = size + 1;
+    if (!size) {
+      this.step = this._readBlock;
+    }
+  });
+};
+Gify.prototype._readImage = function() {
+  this._reader(function(cs) {
+    cs.waste(9);
+    // parse local palette
+    this.withdrawLen = getPaletteSize(cs.consume8()) + 11;
+    this.step = this._readSubBlock;
+  });
+};
