@@ -151,6 +151,7 @@ Gify.prototype._readWaste = function() {
 Gify.prototype._readBlock = function() {
   this._reader(function(cs) {
     var block = cs.consume8();
+    debugger;
     if (block === 0x21) { // EXTENSION BLOCK
       this.withdrawLen = 5;
       this.step = this._readExtention;
@@ -172,10 +173,9 @@ Gify.prototype._readExtention = function() {
         cs.waste(1);
         this.info.duration += cs.consume16LE() * 10; // in milisec, the original accuracy is 1/100 sec
         this.info.frames++; // increment frame count
-        this.withdrawLen = 8;
+        this.withdrawLen = 2;
         this.step = this._readWaste;
       } else {
-        cs.waste(1);
         this.withdrawLen = 1;
         this.step = this._readBlock;
       }
@@ -199,7 +199,7 @@ Gify.prototype._readImage = function() {
   this._reader(function(cs) {
     cs.waste(9);
     // parse local palette
-    this.withdrawLen = getPaletteSize(cs.consume8()) + 11;
+    this.withdrawLen = getPaletteSize(cs.consume8()) + 1;
     this.step = this._readSubBlock;
   });
 };
