@@ -16,12 +16,14 @@ var Consumable = function(readableStream) {
   }
   this.rs = readableStream;
   this.chunk = new Buffer(0);
+  this.chunk.pos = 0;
 };
 Consumable.prototype.withdraw = function(size) {
   var chunk = this.chunk;
   var rest = chunk.length - chunk.pos;
-  if (rest < size) {
-    var next = this.rs.read(size - rest);
+  var shorting = size - rest - (chunk.next? chunk.next.length: 0);
+  if (shorting > 0) {
+    var next = this.rs.read(shorting);
     if (!next) {
       return false;
     } else if (rest > 0) {
@@ -36,14 +38,23 @@ Consumable.prototype.withdraw = function(size) {
   }
   return true;
 };
-Consumable.prototype.consume8 = function() {
+Consumable.prototype._checkNext = function() {
   var chunk = this.chunk;
-  var res = chunk.readUInt8(chunk.pos++);
   var shorting = chunk.pos - chunk.length;
-  if (shorting >= 0) {
+  if (shorting >= 0 && chunk.next) {
     chunk.next.pos = shorting;
     this.chunk = chunk.next;
   }
+};
+Consumable.prototype.consume8 = function() {
+  var chunk = this.chunk;
+  var res = chunk.readUInt8(chunk.pos++);
+  //var shorting = chunk.pos - chunk.length;
+  //if (shorting >= 0) {
+  //  chunk.next.pos = shorting;
+  //  this.chunk = chunk.next;
+  //}
+  this._checkNext();
   return res;
 };
 Consumable.prototype.consume16LE = function() {
@@ -78,11 +89,12 @@ Consumable.prototype.consume32BE = function() {
   }
 };
 Consumable.prototype.waste = function(size) {
-  var chunk = this.chunk;
-  if (chunk.length < chunk.pos + size) {
-    throw new Error('Consumable: cannot waste more than withdrawn');
-  }
-  this.chunk.pos += size;
+  //var chunk = this.chunk;
+  //if (chunk.length < chunk.pos + size) {
+  //  throw new Error('Consumable: cannot waste more than withdrawn');
+  //}
+  this.chunk.pos += size; // chunk.pos < chunck.length is checked at consume8
+  this._checkNext();
 };
 
 var getPaletteSize = function(palette) {
@@ -104,7 +116,7 @@ var Gify = module.exports = function(sourceStream, callback) {
     duration: 0
   };
   this.cb = callback;
-  sourceStream.on('readable', this.step).on('error', this._finish).on('end', this._finish);
+  sourceStream.on('readable', this.step.bind(this)).on('error', this._finish.bind(this)).on('end', this._finish.bind(this));
 };
 Gify.prototype._finish = function(err) {
   if (this.step) { // fire only once
@@ -118,8 +130,8 @@ Gify.prototype._finish = function(err) {
 Gify.prototype._reader = function(callback) {
   var cs = this.cs;
   if (cs.withdraw(this.withdrawLen)) {
-    callback(cs);
-    this.step();
+    callback.call(this, cs);
+    this.step && this.step();
   }
 };
 Gify.prototype._readHeader = function() {
