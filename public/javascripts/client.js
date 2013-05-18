@@ -56,13 +56,13 @@ $(function() {
                       '<a class="span12" target="_blank" href>',
                         '<h3>', (i + 1), '. ', link.title, '</h3>',
                         '<div class="url">', link.url, '</div>',
-                        '<img src="', link.url, '" />',
+                        '<img src="', link.url, '" data-start="', Date.now(), '" data-duration="', 4000, '" id="imgid', i, '">',
                       '</a>',
-                      '<form class="input-append">',
+                      '<form class="input-append" data-imgid="imgid', i, '">',
                         '<input class="bubble-input" type="text">',
                         '<input class="btn" type="submit" value="Bubble">',
                         '<label>Remove after</label>',
-                        '<input class="rmsec" type="number" value="5.0">',
+                        '<input class="rmsec" type="number" value="2.0">',
                         '<span class="add-on">sec</span>',
                       '</form>',
                     '</div>'].join('');
@@ -70,34 +70,36 @@ $(function() {
         // when to use a tag instead of iframe, a href should be encoded url and encoded search keywords
       }
       var rand = function(max, min) {
-        if (!min) {
-          min = 0;
-        }
-        return Math.floor(Math.random() * (max + 1)) + min;
+        return Math.floor(Math.random() * (max - min + 1)) + (min? min: 0);
       };
-      var rmFunc = function() {
-        this.remove();
-      };
-      $('.input-append').submit(function() {
+      $('.input-append').submit(function(e) {
+        e.preventDefault();
         var $this = $(this);
         var $input = $this.find('.bubble-input');
+        var text = $input.val();
+        var imageid = $this.data('imgid');
+        var $img = $('img#' + imageid);
         var rmsec = parseFloat($this.find('.rmsec').val()) * 1000;
-        var $bubble = $(['<div class="bubble animated bounce" style="top:', rand(100), '%; left:', rand(100), '%;">', $input.val(), '</div>'].join(''));
-        setTimeout(rmFunc.bind($bubble), rmsec);
+        var x = rand(90, 10);
+        var y = rand(90, 10);
+        var $bubble = $(['<div class="bubble animated bounce" style="top:', y, '%; left:', x, '%;">', text, '</div>'].join(''));
+        var duration = parseInt($img.data('duration'), 10);
+        var elapsed = (e.timeStamp - parseInt($img.data('start'), 10)) % duration;
+        var data = {
+          elapsed: elapsed,
+          x: x,
+          y: y,
+          text: text,
+          rmsec: rmsec
+        };
+        setTimeout($bubble.hide.bind($bubble, 0, function(duration) {
+          this.data('hideTimer', setInterval(this.hide.bind(this), duration));
+        }.bind($bubble, duration)), rmsec);
+        $bubble.data('showTimer', setInterval($bubble.show.bind($bubble), duration));
         $this.after($bubble);
         $input.val('').focus();
         return false;
       });
-      //setInterval(function() { // TODO clearInterval
-      //  $('span.comments').each(function() {
-      //    $this = $(this);
-      //    var coordinate = $this.offset();
-      //    if ($this.width() + coordinate.left > 0) {
-      //      coordinate.left -= 20;
-      //      $this.offset(coordinate);
-      //    }
-      //  });
-      //}, 100);
       $('div.row-fluid').waypoint(function(e, direction) {
         curHash = $(this).attr('id');
         // waypoint bug, with offset it does not fire the event correctly
