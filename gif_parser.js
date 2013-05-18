@@ -49,11 +49,6 @@ Consumable.prototype._checkNext = function() {
 Consumable.prototype.consume8 = function() {
   var chunk = this.chunk;
   var res = chunk.readUInt8(chunk.pos++);
-  //var shorting = chunk.pos - chunk.length;
-  //if (shorting >= 0) {
-  //  chunk.next.pos = shorting;
-  //  this.chunk = chunk.next;
-  //}
   this._checkNext();
   return res;
 };
@@ -89,10 +84,6 @@ Consumable.prototype.consume32BE = function() {
   }
 };
 Consumable.prototype.waste = function(size) {
-  //var chunk = this.chunk;
-  //if (chunk.length < chunk.pos + size) {
-  //  throw new Error('Consumable: cannot waste more than withdrawn');
-  //}
   this.chunk.pos += size; // chunk.pos < chunck.length is checked at consume8
   this._checkNext();
 };
@@ -107,7 +98,7 @@ var Gify = module.exports = function(sourceStream, callback) {
   }
   this.cs = new Consumable(sourceStream);
   this.step = this._readHeader;
-  this.withdrawLen = 10;
+  this.withdrawLen = 11;
   this.info = {
     valid: false,
     height: 0,
@@ -141,9 +132,10 @@ Gify.prototype._readHeader = function() {
       this._finish();
       return;
     }
+    cs.waste(2);
     // get height/width
-    this.info.height = cs.consume16LE();
     this.info.width = cs.consume16LE();
+    this.info.height = cs.consume16LE();
     //parse global palette
     this.withdrawLen = getPaletteSize(cs.consume8()) + 2; // skipping bg color and aspect ratio
     this.step = this._readWaste;
@@ -188,7 +180,6 @@ Gify.prototype._readExtention = function() {
         this.step = this._readBlock;
       }
     } else { // AEB, CEB, PTEB, ETC
-      cs.waste(2);
       this.withdrawLen = 1;
       this.step = this._readSubBlock;
     }
