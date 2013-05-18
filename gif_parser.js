@@ -107,7 +107,12 @@ var Gify = module.exports = function(sourceStream, callback) {
     duration: 0
   };
   this.cb = callback;
-  sourceStream.on('readable', this.step.bind(this)).on('error', this._finish.bind(this)).on('end', this._finish.bind(this));
+  this.inputEnd = false;
+  this.step(); // make sure to fire the first step
+  sourceStream.on('readable', this.step.bind(this)).on('error', this._finish.bind(this)).on('end', this._inputEnd.bind(this));
+};
+Gify.prototype._inputEnd = function(err) {
+  this.inputEnd = true;
 };
 Gify.prototype._finish = function(err) {
   if (this.step) { // fire only once
@@ -122,23 +127,25 @@ Gify.prototype._reader = function(callback) {
   var cs = this.cs;
   if (cs.withdraw(this.withdrawLen)) {
     callback.call(this, cs);
-    this.step && this.step();
+    this.step();
+  } else if (this.inputEnd) {
+    this._finish();
   }
 };
 Gify.prototype._readHeader = function() {
   this._reader(function(cs) {
     // check if GIF8
     if (cs.consume32BE() != 0x47494638) {
-      this._finish();
-      return;
+      this.step = this._finish;
+    } else {
+      cs.waste(2);
+      // get height/width
+      this.info.width = cs.consume16LE();
+      this.info.height = cs.consume16LE();
+      //parse global palette
+      this.withdrawLen = getPaletteSize(cs.consume8()) + 2; // skipping bg color and aspect ratio
+      this.step = this._readWaste;
     }
-    cs.waste(2);
-    // get height/width
-    this.info.width = cs.consume16LE();
-    this.info.height = cs.consume16LE();
-    //parse global palette
-    this.withdrawLen = getPaletteSize(cs.consume8()) + 2; // skipping bg color and aspect ratio
-    this.step = this._readWaste;
   });
 };
 Gify.prototype._readWaste = function() {
@@ -151,7 +158,6 @@ Gify.prototype._readWaste = function() {
 Gify.prototype._readBlock = function() {
   this._reader(function(cs) {
     var block = cs.consume8();
-    debugger;
     if (block === 0x21) { // EXTENSION BLOCK
       this.withdrawLen = 5;
       this.step = this._readExtention;
@@ -160,9 +166,9 @@ Gify.prototype._readBlock = function() {
       this.step = this._readImage;
     } else if (block === 0x3B) { // TRAILER BLOCK (THE END)
       this.info.valid = true;
-      this._finish();
+      this.step = this._finish;
     } else { // UNKNOWN BLOCK (bad)
-      this._finish();
+      this.step = this._finish;
     }
   });
 };
