@@ -57,9 +57,24 @@
 
     <div id="main" class="container">
       <h1><%= img.title %></h1>
-      <img src="<%= img.url %>">
-      <h3><%= img.duration %></h3>
-
+      <div class="row-fluid">
+        <div class="span8" target="_blank">
+         <img data-imgurl="<%= img.url %>" data-duration="<%= img.duration %>" id="target">
+        </div>
+        <div class="span4" target="_blank">
+          <form id="submit-bubble" class="input-append">
+           <input id="bubble-input" type="text">
+           <input class="btn" type="submit" value="Bubble">
+           <label>Remove after</label>
+           <input id="rmsec" type="number" value="2.0">
+           <span class="add-on">sec</span>
+          </form>
+          <ul id="all-bubble" class="nav nav-tabs nav-stacked">
+          </ul>
+          <ul id="all-bubble" class="nav nav-tabs nav-stacked">
+          </ul>
+        </div>
+      </div>
     </div> <!-- /container -->
 
     <footer class="footer">
