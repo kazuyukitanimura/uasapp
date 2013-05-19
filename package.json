@@ -1,10 +1,10 @@
 {
-  "name": "searchview"
+  "name": "uasapp"
 , "version": "0.0.1"
 , "private": true
 , "scripts": {
     "start": "node app"
-  , "test": "mocha"
+  , "test": "mocha lib/gif_parser_test.js"
   }
 , "dependencies": {
     "express": ">= 3.2.4"
