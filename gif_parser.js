@@ -21,7 +21,7 @@ var Consumable = function(readableStream) {
 Consumable.prototype.withdraw = function(size) {
   var chunk = this.chunk;
   var rest = chunk.length - chunk.pos;
-  var shorting = size - rest - (chunk.next? chunk.next.length: 0);
+  var shorting = size - rest - (chunk.next ? chunk.next.length: 0);
   if (shorting > 0) {
     var next = this.rs.read(shorting);
     if (!next) {
@@ -108,10 +108,12 @@ var Gify = module.exports = function(sourceStream, callback) {
   };
   this.cb = callback;
   this.inputEnd = false;
-  this.step(); // make sure to fire the first step
-  sourceStream.on('readable', this.step.bind(this)).on('error', this._finish.bind(this)).on('end', this._inputEnd.bind(this));
+  sourceStream.on('readable', this._onReadable.bind(this)).on('error', this._finish.bind(this)).on('end', this._onEnd.bind(this));
 };
-Gify.prototype._inputEnd = function(err) {
+Gify.prototype._onReadable = function() {
+  this.step();
+};
+Gify.prototype._onEnd = function() {
   this.inputEnd = true;
 };
 Gify.prototype._finish = function(err) {
