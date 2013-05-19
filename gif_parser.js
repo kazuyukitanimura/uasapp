@@ -162,7 +162,7 @@ Gify.prototype._readBlock = function() {
       this.withdrawLen = 5;
       this.step = this._readExtention;
     } else if (block === 0x2C) { // IMAGE BLOCK
-      this.withdrawLen = 10;
+      this.withdrawLen = 9;
       this.step = this._readImage;
     } else if (block === 0x3B) { // TRAILER BLOCK (THE END)
       this.info.valid = true;
@@ -203,9 +203,9 @@ Gify.prototype._readSubBlock = function() {
 };
 Gify.prototype._readImage = function() {
   this._reader(function(cs) {
-    cs.waste(9);
+    cs.waste(8);
     // parse local palette
-    this.withdrawLen = getPaletteSize(cs.consume8()) + 1;
+    this.withdrawLen = getPaletteSize(cs.consume8()) + 2;
     this.step = this._readSubBlock;
   });
 };
