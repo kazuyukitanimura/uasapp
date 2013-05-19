@@ -56,7 +56,7 @@ $(function() {
                       '<a class="span12" target="_blank" href>',
                         '<h3>', (i + 1), '. ', link.title, '</h3>',
                         '<div class="url">', link.url, '</div>',
-                        '<img src="', link.url, '" data-start="', Date.now(), '" data-duration="', 4000, '" id="imgid', i, '">',
+                        '<img src="', link.url, '" data-start="', Date.now(), '" data-duration="', 4200, '" id="imgid', i, '">',
                       '</a>',
                       '<form class="input-append" data-imgid="imgid', i, '">',
                         '<input class="bubble-input" type="text">',
