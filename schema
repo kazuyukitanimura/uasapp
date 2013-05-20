@@ -1,0 +1,18 @@
+{
+  username: "",
+  userid: number,
+  password: "sha-3",
+  email: "",
+  singupdate: "",
+  followers: [],
+  following: [],
+  collection: [],//favorite
+  // see twitter user info
+  works: [
+    {
+      title : {},
+      img :{},
+      bubbles: []
+    }
+  ]
+}
