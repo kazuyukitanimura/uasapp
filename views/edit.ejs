@@ -58,21 +58,24 @@
     <div id="main" class="container">
       <h1><%= img.title %></h1>
       <div class="row-fluid">
-        <div class="span8" target="_blank">
-         <img data-imgurl="<%= img.url %>" data-duration="<%= img.duration %>" id="target">
+        <div class="span8">
+          <div id="img-wrapper">
+            <img data-imgurl="<%= img.url %>" data-duration="<%= img.duration %>" id="target">
+          </div>
         </div>
-        <div class="span4" target="_blank">
-          <form id="submit-bubble" class="input-append">
-           <input id="bubble-input" type="text">
-           <input class="btn" type="submit" value="Bubble">
-           <label>Remove after</label>
-           <input id="rmsec" type="number" value="2.0">
-           <span class="add-on">sec</span>
+        <div class="span4">
+          <form id="submit-bubble">
+            <div class="input-append">
+              <input id="bubble-input" type="text">
+              <input class="btn" type="submit" value="Bubble">
+            </div>
+            <div class="input-prepend input-append">
+              <span class="add-on">Hide after</span>
+              <input id="rmsec" class="input-mini" type="number" value="2.0">
+              <span class="add-on">sec</span>
+            </div>
           </form>
-          <ul id="all-bubble" class="nav nav-tabs nav-stacked">
-          </ul>
-          <ul id="all-bubble" class="nav nav-tabs nav-stacked">
-          </ul>
+          <div id="all-bubble"></div>
         </div>
       </div>
     </div> <!-- /container -->
