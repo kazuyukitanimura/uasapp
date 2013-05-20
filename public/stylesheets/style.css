@@ -28,7 +28,7 @@ div.row-fluid a.span12 div.url {
   margin-bottom: 3px;
 }
 
-div#main h1 {
+h1.img-title {
   color: #FFF;
   text-shadow: 1px 1px #333;
   /*text-decoration: underline;*/
