@@ -3,6 +3,7 @@
  */
 
 var express = require('express');
+var RedisStore = require('connect-redis')(express);
 var routes = require('./routes');
 var user = require('./routes/user');
 var search = require('./routes/search');
@@ -23,7 +24,7 @@ app.configure(function() {
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser('your secret here'));
-  app.use(express.session());
+  app.use(express.session({secret: 'himitsu!', store: new RedisStore(), key: 'express.sid'}));
   app.use(app.router);
   app.use(express['static'](path.join(__dirname, 'public')));
 });
