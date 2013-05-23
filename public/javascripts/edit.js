@@ -28,7 +28,7 @@ $(function() {
       text: text,
       rmsec: rmsec
     };
-    $allBubble.append($([
+    var $bubbleEntry = $([
       '<div class="form-inline bubble-entry">',
         '<button class="close pull-right">&times;</button>',
         '<div class="input-prepend">',
@@ -44,11 +44,18 @@ $(function() {
           '<input class="input-mini" type="text" value="', data.text,'">',
         '</div>',
       '</div>'
-    ].join('')));
+    ].join(''));
+    $allBubble.append($bubbleEntry);
     setTimeout($bubble.hide.bind($bubble, 0, function(duration) {
-      this.data('hideTimer', setInterval(this.hide.bind(this), duration));
+      this.data('hideInterval', setInterval(this.hide.bind(this), duration));
     }.bind($bubble, duration)), rmsec);
-    $bubble.data('showTimer', setInterval($bubble.show.bind($bubble), duration));
+    $bubble.data('showInterval', setInterval($bubble.show.bind($bubble), duration));
+    $bubbleEntry.find('.close').click(function($bubble, e){
+      clearInterval($bubble.data('showInterval'));
+      clearInterval($bubble.data('hideInterval'));
+      $(this).remove();
+      $bubble.remove();
+    }.bind($bubbleEntry, $bubble));
     $img.after($bubble);
     $input.val('').focus();
     return false;
