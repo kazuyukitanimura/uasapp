@@ -36,7 +36,8 @@ app.configure('development', function() {
 app.get('/', routes.index);
 app.get('/users', user.list);
 app.get('/search', search.index);
-app.get('/edit', edit.index);
+app.get('/edit', edit.get);
+app.post('/edit', edit.post);
 app.get('/robots.txt', others.robots);
 app.get('/humans.txt', others.humans);
 

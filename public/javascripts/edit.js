@@ -33,15 +33,15 @@ $(function() {
         '<button class="close pull-right">&times;</button>',
         '<div class="input-prepend">',
           '<span class="add-on">Time</span>',
-          '<input class="input-mini" type="number" value="', data.elapsed / 1000.0,'">',
+          '<input class="input-mini" type="number" name="elapsed" value="', data.elapsed / 1000.0,'" min="0" step="any">',
         '</div>',
         '<div class="input-prepend">',
           '<span class="add-on">Hide after</span>',
-          '<input class="input-mini" type="number" value="', data.rmsec / 1000.0,'">',
+          '<input class="input-mini" type="number" name="rmsec" value="', data.rmsec / 1000.0,'" min="0" step="any">',
         '</div>',
         '<div class="input-prepend">',
           '<span class="add-on">Text</span>',
-          '<input class="input-mini" type="text" value="', data.text,'">',
+          '<input class="input-mini" type="text" name="text" value="', data.text,'">',
         '</div>',
       '</div>'
     ].join(''));

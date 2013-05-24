@@ -2,7 +2,7 @@
  * GET search page.
  */
 
-exports.index = function(req, res) {
+exports.get = function(req, res) {
   var img = req.query.img;
   console.log(img);
   var durationMatch = /\w+-\d+-\d+-\d+-(\d+)\.\w+/.exec(img); // digest_height_width_size_duration.gif
@@ -21,3 +21,8 @@ exports.index = function(req, res) {
   }
 };
 
+exports.post = function(req, res) {
+  // TODO check the order of req.body
+  console.log(req.body);
+  // save
+};

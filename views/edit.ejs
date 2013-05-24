@@ -71,11 +71,15 @@
             </div>
             <div class="input-prepend input-append">
               <span class="add-on">Hide after</span>
-              <input id="rmsec" class="input-mini" type="number" value="2.0">
+              <input id="rmsec" class="input-mini" type="number" value="2.0" min="0" step="any">
               <span class="add-on">sec</span>
             </div>
           </form>
-          <div id="all-bubble"></div>
+          <form id="save" method="post">
+            <div id="all-bubble"></div>
+            <input type="hidden" name="img" value="<%= img.url %>">
+            <button type="submit" class="btn btn-primary">Save</button> <!--TODO change this to ajax -->
+          </form>
         </div>
       </div>
     </div> <!-- /container -->
