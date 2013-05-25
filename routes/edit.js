@@ -25,4 +25,5 @@ exports.post = function(req, res) {
   // TODO check the order of req.body
   console.log(req.body);
   // save
+  res.end('success');
 };
