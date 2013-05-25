@@ -2,6 +2,8 @@
  * GET search page.
  */
 
+var db = require('riak-js').getClient();
+
 exports.get = function(req, res) {
   var img = req.query.img;
   console.log(img);
