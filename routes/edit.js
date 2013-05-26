@@ -3,6 +3,10 @@
  */
 
 var db = require('riak-js').getClient();
+var config = require('../config');
+var bucket = config.bubbleBucket;
+var Flake = require('../lib/flake');
+var flake = new Flake();
 
 exports.get = function(req, res) {
   var img = req.query.img;
@@ -25,7 +29,16 @@ exports.get = function(req, res) {
 
 exports.post = function(req, res) {
   // TODO check the order of req.body
-  console.log(req.body);
-  // save
-  res.end('success');
+  var data = req.body;
+  console.log(data);
+  db.save(bucket, flake.next(), data, function(err, data, meta) {
+    console.log(data);
+    console.log(meta);
+    if (err) {
+      console.error(err);
+      res.send(500);
+    } else {
+      res.send(200);
+    }
+  });
 };

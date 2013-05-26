@@ -1,0 +1,3 @@
+module.exports = {
+  bubbleBucket: 'bubbleBucket'
+};
