@@ -10,6 +10,8 @@ $(function() {
   var ELAPSED = 'elapsed';
   var RMSEC = 'rmsec';
   var TEXT = 'text';
+  var X = 'x';
+  var Y = 'y';
   $('#submit-bubble').submit(function(e) {
     e.preventDefault();
     var $this = $(this);
@@ -29,18 +31,19 @@ $(function() {
         '<button class="close pull-right">&times;</button>',
         '<div class="input-prepend">',
           '<span class="add-on">Time</span>',
-          '<input class="input-mini" type="number" name="',  ELAPSED, '" value="', elapsed / 1000.0,'" min="0" step="any" disabled>',
+          '<input class="input-mini" type="number" name="',  ELAPSED, '" value="', elapsed / 1000.0, '" min="0" step="any" disabled>',
         '</div>',
         '<div class="input-prepend">',
           '<span class="add-on">Hide after</span>',
-          '<input class="input-mini" type="number" name="', RMSEC, '" value="', rmsec / 1000.0,'" min="0" step="any" disabled>',
+          '<input class="input-mini" type="number" name="', RMSEC, '" value="', rmsec / 1000.0, '" min="0" step="any" disabled>',
         '</div>',
         '<div class="input-prepend">',
           '<span class="add-on">Text</span>',
-          '<input class="input-mini" type="text" name="', TEXT, '" value="', text,'" disabled>',
+          '<input class="input-mini" type="text" name="', TEXT, '" value="', text, '" disabled>',
         '</div>',
       '</div>'
     ].join(''));
+    $bubbleEntry.data(X, x).data(Y, y);
     $allBubble.append($bubbleEntry);
     setTimeout($bubble.hide.bind($bubble, 0, function(duration) {
       this.data('hideInterval', setInterval(this.hide.bind(this), duration));
@@ -59,23 +62,27 @@ $(function() {
   $('#save').submit(function(e) {
     e.preventDefault();
     var $this = $(this);
-    // the order of elapseds, rmsecs, texts are guaranteed by jQuery
-    var elapseds = $this.find(['input[name="', ELAPSED, '"]'].join(''));
-    var rmsecs = $this.find(['input[name="', RMSEC, '"]'].join(''));
-    var texts = $this.find(['input[name="', TEXT, '"]'].join(''));
+    var bubbleEntries = $this.find('.bubble-entry');
     var img = $this.find('input[name="img"]');
     var imgTitle = $('h1.img-title span#title');
-    if (elapseds && rmsecs && texts && elapseds.length === rmsecs.length && elapseds.length === texts.length && img && img.length === 1 && imgTitle && imgTitle.length === 1) {
+    if (bubbleEntries && bubbleEntries.length > 0 && img && img.length === 1 && imgTitle && imgTitle.length === 1) {
+      var bubbles = bubbleEntries.map(function() {
+        var $elm = $(this);
+        var elapsed = parseFloat($elm.find(['input[name="', ELAPSED, '"]'].join('')).val()) * 1000;
+        var rmsec = parseFloat($elm.find(['input[name="', RMSEC, '"]'].join('')).val()) * 1000;
+        var text = $elm.find(['input[name="', TEXT, '"]'].join('')).val();
+        var x = $elm.data(X);
+        var y = $elm.data(Y);
+        return {
+          elapsed: elapsed,
+          rmsec: rmsec,
+          text: text,
+          x: x,
+          y: y
+        };
+      }).get();
       var data = {
-        elapsed: elapseds.map(function() {
-          return $(this).val();
-        }).get(),
-        text: texts.map(function() {
-          return $(this).val();
-        }).get(),
-        rmsec: rmsecs.map(function() {
-          return $(this).val();
-        }).get(),
+        bubbles: bubbles,
         img: img.val(),
         title: imgTitle.text()
       };
