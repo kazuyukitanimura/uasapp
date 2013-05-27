@@ -34,6 +34,11 @@ h1.img-title {
   /*text-decoration: underline;*/
 }
 
+h1.img-title span#title:empty:before {
+  content: "Untitled";
+  color: #888;
+}
+
 div#img-wrapper {
   position: relative;
 }

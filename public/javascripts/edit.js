@@ -64,7 +64,8 @@ $(function() {
     var rmsecs = $this.find(['input[name="', RMSEC, '"]'].join(''));
     var texts = $this.find(['input[name="', TEXT, '"]'].join(''));
     var img = $this.find('input[name="img"]');
-    if (elapseds && rmsecs && texts && elapseds.length === rmsecs.length && elapseds.length === texts.length && img && img.length === 1) {
+    var imgTitle = $('h1.img-title span#title');
+    if (elapseds && rmsecs && texts && elapseds.length === rmsecs.length && elapseds.length === texts.length && img && img.length === 1 && imgTitle && imgTitle.length === 1) {
       var data = {
         elapsed: elapseds.map(function() {
           return $(this).val();
@@ -75,7 +76,8 @@ $(function() {
         rmsec: rmsecs.map(function() {
           return $(this).val();
         }).get(),
-        img: img.val()
+        img: img.val(),
+        title: imgTitle.text()
       };
       $.post('/edit', data).done(function(res) {
         console.log(res);
