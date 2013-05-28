@@ -49,7 +49,7 @@ $(function() {
       this.data('hideInterval', setInterval(this.hide.bind(this), duration));
     }.bind($bubble, duration)), rmsec);
     $bubble.data('showInterval', setInterval($bubble.show.bind($bubble), duration));
-    $bubbleEntry.find('.close').click(function($bubble, e){
+    $bubbleEntry.find('.close').click(function($bubble, e) {
       clearInterval($bubble.data('showInterval'));
       clearInterval($bubble.data('hideInterval'));
       $(this).remove();
@@ -63,9 +63,8 @@ $(function() {
     e.preventDefault();
     var $this = $(this);
     var bubbleEntries = $this.find('.bubble-entry');
-    var img = $this.find('input[name="img"]');
     var imgTitle = $('h1.img-title span#title');
-    if (bubbleEntries && bubbleEntries.length > 0 && img && img.length === 1 && imgTitle && imgTitle.length === 1) {
+    if (bubbleEntries && bubbleEntries.length > 0 && $img && $img.length === 1 && imgTitle && imgTitle.length === 1) {
       var bubbles = bubbleEntries.map(function() {
         var $elm = $(this);
         var elapsed = parseFloat($elm.find(['input[name="', ELAPSED, '"]'].join('')).val()) * 1000;
@@ -83,7 +82,7 @@ $(function() {
       }).get();
       var data = {
         bubbles: bubbles,
-        img: img.val(),
+        url: $img.data('imgurl'),
         title: imgTitle.text()
       };
       $.post('/edit', data).done(function(res) {

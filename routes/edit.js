@@ -43,7 +43,7 @@ exports.get = function(req, res) {
         res.send(500);
         throw err;
       } else {
-        var duration = getDuration(data.img);
+        var duration = getDuration(data.url);
         if (duration) {
           data.duration = duration;
           template.img = data;
