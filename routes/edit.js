@@ -5,6 +5,7 @@
 var db = require('riak-js').getClient();
 var config = require('../config');
 var bucket = config.bubbleBucket;
+var imgPath = config.imgPath;
 var Flake = require('../lib/flake');
 var flake = new Flake();
 
@@ -28,7 +29,7 @@ exports.get = function(req, res) {
     if (duration) {
       template.img = {
         title: '',
-        url: '/images/' + img,
+        url: img.indexOf(imgPath) === 0 ? img: imgPath + img,
         duration: duration
       };
       res.render('edit', template);
