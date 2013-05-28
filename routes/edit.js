@@ -21,24 +21,26 @@ exports.get = function(req, res) {
   console.log(img, view);
   var template = {
     title: title,
-    description: description,
+    description: description
   };
   if (img) {
     var duration = getDuration(img);
     if (duration) {
       template.img = {
-          title: '',
-          url: '/images/' + img,
-          duration: duration
-        };
+        title: '',
+        url: '/images/' + img,
+        duration: duration
+      };
       res.render('edit', template);
-      return;
+    } else {
+      res.send(404);
     }
   } else if (view) {
     db.get(bucket, view, function(err, data, meta) {
       console.log(data);
       console.log(meta);
       if (err) {
+        res.send(500);
         throw err;
       } else {
         var duration = getDuration(data.img);
@@ -46,12 +48,14 @@ exports.get = function(req, res) {
           data.duration = duration;
           template.img = data;
           res.render('edit', template);
-          return;
+        } else {
+          res.send(404);
         }
       }
     });
+  } else {
+    res.send(404);
   }
-  res.send(404);
 };
 
 exports.post = function(req, res) {
@@ -62,6 +66,7 @@ exports.post = function(req, res) {
     console.log(data);
     console.log(meta);
     if (err) {
+      res.send(500);
       throw err;
     } else {
       res.send(200);
