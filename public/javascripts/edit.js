@@ -1,4 +1,9 @@
 $(function() {
+  var ELAPSED = 'elapsed';
+  var RMSEC = 'rmsec';
+  var TEXT = 'text';
+  var X = 'x';
+  var Y = 'y';
   var rand = function(max, min) {
     min = min || 0;
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -8,11 +13,6 @@ $(function() {
   $img.attr('src', $img.data('imgurl'));
   var duration = $img.data('duration');
   var startTime = Date.now();
-  var ELAPSED = 'elapsed';
-  var RMSEC = 'rmsec';
-  var TEXT = 'text';
-  var X = 'x';
-  var Y = 'y';
   $('.bubble.bubble-old').each(function(){
     var $this = $(this);
     var elapsed = $this.data(ELAPSED);
@@ -78,8 +78,8 @@ $(function() {
     if (bubbleEntries && bubbleEntries.length > 0 && $img && $img.length === 1 && imgTitle && imgTitle.length === 1) {
       var bubbles = bubbleEntries.map(function() {
         var $elm = $(this);
-        var elapsed = parseFloat($elm.find(['input[name="', ELAPSED, '"]'].join('')).val()) * 1000;
-        var rmsec = parseFloat($elm.find(['input[name="', RMSEC, '"]'].join('')).val()) * 1000;
+        var elapsed = Math.round(parseFloat($elm.find(['input[name="', ELAPSED, '"]'].join('')).val()) * 1000);
+        var rmsec = Math.round(parseFloat($elm.find(['input[name="', RMSEC, '"]'].join('')).val()) * 1000);
         var text = $elm.find(['input[name="', TEXT, '"]'].join('')).val();
         var x = $elm.data(X);
         var y = $elm.data(Y);
@@ -91,6 +91,21 @@ $(function() {
           y: y
         };
       }).get();
+      $('.bubble.bubble-old').each(function() {
+        var $elm = $(this);
+        var elapsed = $elm.data(ELAPSED);
+        var rmsec = $elm.data(RMSEC);
+        var text = $elm.text();
+        var x = $elm.data(X);
+        var y = $elm.data(Y);
+        bubbles.push({
+          elapsed: elapsed,
+          rmsec: rmsec,
+          text: text,
+          x: x,
+          y: y
+        });
+      });
       var data = {
         bubbles: bubbles,
         url: $img.data('imgurl'),
@@ -104,8 +119,7 @@ $(function() {
         $('#error-message').show();
       });
     } else {
-      console.error('something went wrong');
-      $('#error-message').show();
+      console.error('Nothing to save');
     }
     return false;
   });
