@@ -6,12 +6,24 @@ $(function() {
   var $allBubble = $('#all-bubble');
   var $img = $('img#target');
   $img.attr('src', $img.data('imgurl'));
+  var duration = $img.data('duration');
   var startTime = Date.now();
   var ELAPSED = 'elapsed';
   var RMSEC = 'rmsec';
   var TEXT = 'text';
   var X = 'x';
   var Y = 'y';
+  $('.bubble.bubble-old').each(function(){
+    var $this = $(this);
+    var elapsed = $this.data(ELAPSED);
+    var rmsec = $this.data(RMSEC);
+    setTimeout($this.hide.bind($this, 0, function(duration) {
+      setInterval(this.hide.bind(this), duration);
+    }.bind($this, duration)), elapsed + rmsec);
+    setTimeout($this.show.bind($this, 0, function(duration) {
+      setInterval(this.show.bind(this), duration);
+    }.bind($this, duration)), elapsed);
+  });
   $('#submit-bubble').submit(function(e) {
     e.preventDefault();
     var $this = $(this);
@@ -24,7 +36,6 @@ $(function() {
     var x = rand(90);
     var y = rand(90);
     var $bubble = $(['<div class="bubble animated bounce" style="top:', y, '%; left:', x, '%;">', text, '</div>'].join(''));
-    var duration = parseInt($img.data('duration'), 10);
     var elapsed = (e.timeStamp - startTime) % duration;
     var $bubbleEntry = $([
       '<div class="form-inline bubble-entry">',

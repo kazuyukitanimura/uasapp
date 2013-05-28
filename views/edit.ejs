@@ -74,7 +74,7 @@
             <% if (img.bubbles) { %>
               <% for (var i = 0, l = img.bubbles.length; i < l; i++) { %>
                 <% var bubble = img.bubbles[i]; %>
-                <div class="bubble animated bounce" style="top:<%= bubble.y %>%; left:<%= bubble.x %>%;"><%= bubble.text %></div>
+                <div class="bubble bubble-old animated bounce" style="top: <%= bubble.y %>%; left: <%= bubble.x %>%; display: none;" data-elapsed="<%= bubble.elapsed %>" data-rmsec="<%= bubble.rmsec %>"><%= bubble.text %></div>
               <% } %>
             <% } %>
           </div>
