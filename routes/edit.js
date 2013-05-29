@@ -1,5 +1,5 @@
 /*
- * GET search page.
+ * GET and Post edit page.
  */
 
 var db = require('riak-js').getClient();

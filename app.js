@@ -8,6 +8,7 @@ var routes = require('./routes');
 var user = require('./routes/user');
 var search = require('./routes/search');
 var edit = require('./routes/edit');
+var timeline = require('./routes/timeline');
 var others = require('./routes/others');
 var http = require('http');
 var path = require('path');
@@ -38,6 +39,7 @@ app.get('/users', user.list);
 app.get('/search', search.index);
 app.get('/edit', edit.get);
 app.post('/edit', edit.post);
+app.get('/timeline', timeline.index);
 app.get('/robots.txt', others.robots);
 app.get('/humans.txt', others.humans);
 
