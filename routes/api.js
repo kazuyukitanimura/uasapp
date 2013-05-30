@@ -12,7 +12,18 @@ var getDuration = exports.getDuration = function(img) {
 };
 
 exports.index = function(req, res) {
-  db.mapreduce.add(bucket).map('Riak.mapValuesJson')
+  db.mapreduce.add(bucket).map(function(value, keydata, arg) {
+    return [[value.key, keydata]];
+  }).reduce(function(valueList, arg) {
+    // TODO sort top max values
+    return [valueList.reduce(function(acc, value) {
+      return acc + value;
+    },
+    0)];
+  },
+  {
+    max: 10
+  });
   db.get(bucket, view, function(err, data, meta) {
     console.log(data);
     console.log(meta);
