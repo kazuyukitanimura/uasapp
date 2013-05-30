@@ -4,6 +4,7 @@ $(function() {
   var TEXT = 'text';
   var X = 'x';
   var Y = 'y';
+  var LANG = 'lang';
   var rand = function(max, min) {
     min = min || 0;
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -54,7 +55,7 @@ $(function() {
         '</div>',
       '</div>'
     ].join(''));
-    $bubbleEntry.data(X, x).data(Y, y);
+    $bubbleEntry.data(X, x).data(Y, y).data(LANG, (navigator.language || navigator.userLanguage));
     $allBubble.append($bubbleEntry);
     setTimeout($bubble.hide.bind($bubble, 0, function(duration) {
       this.data('hideInterval', setInterval(this.hide.bind(this), duration));
@@ -83,12 +84,14 @@ $(function() {
         var text = $elm.find(['input[name="', TEXT, '"]'].join('')).val();
         var x = $elm.data(X);
         var y = $elm.data(Y);
+        var lang = $elm.data(LANG);
         return {
           elapsed: elapsed,
           rmsec: rmsec,
           text: text,
           x: x,
-          y: y
+          y: y,
+          lang: lang
         };
       }).get();
       $('.bubble.bubble-old').each(function() {
@@ -98,12 +101,14 @@ $(function() {
         var text = $elm.text();
         var x = $elm.data(X);
         var y = $elm.data(Y);
+        var lang = $elm.data(LANG);
         bubbles.push({
           elapsed: elapsed,
           rmsec: rmsec,
           text: text,
           x: x,
-          y: y
+          y: y,
+          lang: lang
         });
       });
       var data = {
