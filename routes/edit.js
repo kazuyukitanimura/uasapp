@@ -9,10 +9,7 @@ var imgPath = config.imgPath;
 var Flake = require('../lib/flake');
 var flake = new Flake();
 
-var getDuration = function(img) {
-  var durationMatch = /\w+-\d+-\d+-\d+-(\d+)\.\w+/.exec(img); // digest_height_width_size_duration.gif
-  return durationMatch ? durationMatch[1] : null;
-};
+var getDuration = require('./api').getDuration;
 var description = 'Experimental short video sharing service';
 var title = 'UasApp';
 
@@ -44,6 +41,11 @@ exports.get = function(req, res) {
         res.send(500);
         throw err;
       } else {
+        if (meta.statusCode === 300) {
+          for (var obj in data) {
+            // TODO reconcile siblings
+          }
+        }
         var duration = getDuration(data.url);
         if (duration) {
           data.duration = duration;
