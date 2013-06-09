@@ -73,7 +73,16 @@ exports.post = function(req, res) {
   // TODO check if the img url really exists
   var duration = getDuration(data.url);
   if (duration) {
-    data.duration = duration;
+    data.duration = parseInt(duration, 10);
+    if (data.bubbles) {
+      for (var i = data.bubbles.length; i--;) {
+        var bubble = data.bubbles[i];
+        bubble.elapsed = parseInt(bubble.elapsed, 10);
+        bubble.rmsec = parseInt(bubble.rmsec, 10);
+        bubble.x = parseInt(bubble.x, 10);
+        bubble.y = parseInt(bubble.y, 10);
+      }
+    }
     db.save(bucket, flake.next(), data, function(err, data, meta) {
       console.log(data);
       console.log(meta);
