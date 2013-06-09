@@ -18,25 +18,26 @@ exports.index = function(req, res) {
     var start = parseInt(req.query.start, 10) || 0;
     var end = parseInt(req.query.end, 10) || 10;
     db.mapreduce.add(bucket).map(function(value, keydata, arg) {
+      var timeRadix = arg.timeRadix;
+      var timeSequenceMachine = value.key.split('-');
+      var time = parseInt(timeSequenceMachine[0], timeRadix);
+      var sequence = parseInt(timeSequenceMachine[1], timeRadix);
       return [{
         id: value.key,
+        time: time,
+        sequence: sequence,
         data: Riak.mapValuesJson(value)[0]
       }];
+    },
+    {
+      timeRadix: timeRadix
     }).reduce(function(valueList, arg) {
-      var timeRadix = arg.timeRadix;
-      // TODO this is O(n log n). It can be O(n)
+      // TODO This is O(n log n). It can be O(n) maybe.
       return valueList.sort(function(a, b) {
-        var aTimeSequenceMachine = a.id.split('-');
-        var bTimeSequenceMachine = b.id.split('-');
-        var aTime = parseInt(aTimeSequenceMachine[0], timeRadix);
-        var bTime = parseInt(bTimeSequenceMachine[0], timeRadix);
-        var aSequence = parseInt(aTimeSequenceMachine[1], timeRadix);
-        var bSequence = parseInt(bTimeSequenceMachine[1], timeRadix);
-        return (bTime - aTime) || (bSequence - aSequence);
+        return (b.time - a.time) || (b.sequence - a.sequence);
       }).slice(arg.start, arg.end);
     },
     {
-      timeRadix: timeRadix,
       start: start,
       end: end
     }).run(function(err, data) {
