@@ -24,6 +24,7 @@ exports.index = function(req, res) {
       }];
     }).reduce(function(valueList, arg) {
       var timeRadix = arg.timeRadix;
+      // TODO this is O(n log n). It can be O(n)
       return valueList.sort(function(a, b) {
         var aTimeSequenceMachine = a.id.split('-');
         var bTimeSequenceMachine = b.id.split('-');
@@ -49,26 +50,5 @@ exports.index = function(req, res) {
   } else {
     res.send(404);
   }
-  //db.get(bucket, view, function(err, data, meta) {
-  //  console.log(data);
-  //  console.log(meta);
-  //  if (err) {
-  //    res.send(500);
-  //    throw err;
-  //  } else {
-  //    if (meta.statusCode === 300) {
-  //      for (var obj in data) {
-  //        // TODO reconcile siblings
-  //      }
-  //    }
-  //    var duration = getDuration(data.url);
-  //    if (duration) {
-  //      data.duration = duration;
-  //      res.send(data);
-  //    } else {
-  //      res.send(404);
-  //    }
-  //  }
-  //});
 };
 

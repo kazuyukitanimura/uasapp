@@ -46,13 +46,18 @@ exports.get = function(req, res) {
             // TODO reconcile siblings
           }
         }
-        var duration = getDuration(data.url);
-        if (duration) {
-          data.duration = duration;
+        if (data.duration) {
           template.img = data;
           res.render('edit', template);
         } else {
-          res.send(404);
+          var duration = getDuration(data.url);
+          if (duration) {
+            data.duration = duration;
+            template.img = data;
+            res.render('edit', template);
+          } else {
+            res.send(404);
+          }
         }
       }
     });
@@ -65,15 +70,22 @@ exports.post = function(req, res) {
   // TODO check the order of req.body
   var data = req.body;
   console.log(data);
-  db.save(bucket, flake.next(), data, function(err, data, meta) {
-    console.log(data);
-    console.log(meta);
-    if (err) {
-      res.send(500);
-      throw err;
-    } else {
-      res.send(200);
-    }
-  });
+  // TODO check if the img url really exists
+  var duration = getDuration(data.url);
+  if (duration) {
+    data.duration = duration;
+    db.save(bucket, flake.next(), data, function(err, data, meta) {
+      console.log(data);
+      console.log(meta);
+      if (err) {
+        res.send(500);
+        throw err;
+      } else {
+        res.send(200);
+      }
+    });
+  } else {
+    res.send(500);
+  }
 };
 
