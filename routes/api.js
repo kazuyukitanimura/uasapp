@@ -41,10 +41,11 @@ exports.index = function(req, res) {
       end: end
     }).run(function(err, data) {
       console.log(data);
-      if (Array.isArray(data)) { // tentative error check
-        res.send(data);
-      } else {
+      if (err) {
         res.send(500);
+        throw err;
+      } else {
+        res.send(data);
       }
     });
   } else {
