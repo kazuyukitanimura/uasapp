@@ -13,8 +13,13 @@ var getDuration = exports.getDuration = function(img) {
 };
 
 exports.timeline = function(req, res) {
-  var start = parseInt(req.query.start, 10) || 0;
-  var end = parseInt(req.query.end, 10) || 10;
+  var mapArg = {
+    timeRadix: timeRadix
+  };
+  var reduceArg = {
+    start: parseInt(req.query.start, 10) || 0,
+    end: parseInt(req.query.end, 10) || 10
+  };
   db.mapreduce.add(bucket).map(function(value, keydata, arg) {
     var timeRadix = arg.timeRadix;
     var timeSequenceMachine = value.key.split('-');
@@ -27,18 +32,13 @@ exports.timeline = function(req, res) {
       data: Riak.mapValuesJson(value)[0]
     }];
   },
-  {
-    timeRadix: timeRadix
-  }).reduce(function(valueList, arg) {
+  mapArg).reduce(function(valueList, arg) {
     // TODO This is O(n log n). It can be O(n) maybe.
     return valueList.sort(function(a, b) {
       return (b.time - a.time) || (b.sequence - a.sequence);
     }).slice(arg.start, arg.end);
   },
-  {
-    start: start,
-    end: end
-  }).run(function(err, data) {
+  reduceArg).run(function(err, data) {
     console.log(data);
     if (err) {
       res.send(500);
