@@ -45,6 +45,10 @@ exports.index = function(req, res) {
         res.send(500);
         throw err;
       } else {
+        console.log(req.session);
+        req.session = req.session || {};
+        req.session.newestId = data[0].id;
+        req.session.oldestId = data[data.length - 1].id;
         res.send(data);
       }
     });
