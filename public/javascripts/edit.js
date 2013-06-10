@@ -75,7 +75,7 @@ $(function() {
     e.preventDefault();
     var $this = $(this);
     var bubbleEntries = $this.find('.bubble-entry');
-    var imgTitle = $('h1.img-title span#title');
+    var imgTitle = $('h1.img-title span.title');
     if (bubbleEntries && bubbleEntries.length > 0 && $img && $img.length === 1 && imgTitle && imgTitle.length === 1) {
       var bubbles = bubbleEntries.map(function() {
         var $elm = $(this);
