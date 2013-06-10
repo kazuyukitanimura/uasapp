@@ -29,13 +29,13 @@ div.row-fluid a.span12 div.url {
   margin-bottom: 3px;
 }
 
-h1.img-title {
+.img-title {
   color: #FFF;
   text-shadow: 1px 1px #333;
   /*text-decoration: underline;*/
 }
 
-h1.img-title span#title:empty:before {
+.img-title span.title:empty:before {
   content: "Untitled";
   color: #888;
 }

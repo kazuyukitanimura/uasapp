@@ -5,6 +5,7 @@
 var db = require('riak-js').getClient();
 var config = require('../config');
 var bucket = config.bubbleBucket;
+var timeOffset = config.timeOffset;
 var timeRadix = config.timeRadix;
 
 var getDuration = exports.getDuration = function(img) {
@@ -14,6 +15,7 @@ var getDuration = exports.getDuration = function(img) {
 
 exports.timeline = function(req, res) {
   var mapArg = {
+    timeOffset: timeOffset,
     timeRadix: timeRadix
   };
   var reduceArg = {
@@ -21,9 +23,10 @@ exports.timeline = function(req, res) {
     end: parseInt(req.query.end, 10) || 10
   };
   db.mapreduce.add(bucket).map(function(value, keydata, arg) {
+    var timeOffset = arg.timeOffset;
     var timeRadix = arg.timeRadix;
     var timeSequenceMachine = value.key.split('-');
-    var time = parseInt(timeSequenceMachine[0], timeRadix);
+    var time = parseInt(timeSequenceMachine[0], timeRadix) + timeOffset;
     var sequence = parseInt(timeSequenceMachine[1], timeRadix);
     return [{
       id: value.key,
