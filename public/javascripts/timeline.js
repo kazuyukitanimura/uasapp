@@ -10,6 +10,8 @@ $(function() {
       var $title = $('<span></span>', {'class': 'title'}).text(data.title).appendTo($imgTitle);
       var $imgWrapper = $('<div></div>', {'class': 'img-wrapper span6'}).appendTo($entry);
       var $img = $('<img>', {'class': 'img-tl'}).attr('src', data.url).data('duration', data.duration).appendTo($imgWrapper);
+      var $ctrlWrapper = $('<div></div>', {'class': 'ctrl-wrapper span6'}).appendTo($entry);
+      var $editBtn = $('<button></button>', {'class': 'btn'}).text('Edit').appendTo($ctrlWrapper);
     }
     console.log(entries);
   }).fail(function() {
