@@ -9,6 +9,7 @@ $(function() {
     for (var i = 0, l = entries.length; i < l; i++) {
       var entry = entries[i];
       var data = entry.data;
+      var bubbles = data.bubbles;
       var $entry = $('<li></li>', {
         'id': entry.id,
         'class': 'span12 clearfix'
@@ -22,6 +23,19 @@ $(function() {
       var $img = $('<img>', {
         'class': 'img-tl'
       }).attr('src', data.url).data('duration', data.duration).appendTo($imgWrapper);
+      for (var j = 0, m = bubbles.length; j < m; j++) {
+        var bubble = bubbles[j];
+        var $bubble = $('<div></div>', {
+          'class': 'bubble animated bounce',
+          'style': ['top:', bubble.y, '%; left:', bubble.x, '%; display: none;'].join('')
+        }).text(bubble.text).appendTo($imgWrapper);
+        setTimeout($bubble.hide.bind($bubble, 0, function(duration) {
+          setInterval(this.hide.bind(this), duration);
+        }.bind($bubble, data.duration)), bubble.elapsed + bubble.rmsec);
+        setTimeout($bubble.show.bind($bubble, 0, function(duration) {
+          setInterval(this.show.bind(this), duration);
+        }.bind($bubble, data.duration)), bubble.elapsed);
+      }
       var $ctrlWrapper = $('<div></div>', {
         'class': 'ctrl-wrapper pull-left caption'
       }).appendTo($entryInner);

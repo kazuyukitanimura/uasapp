@@ -1,16 +1,16 @@
 .navbar-inner {
-  background: rgba(250, 250, 250, 0.5) !important;
+  background: rgba(0, 0, 0, 0.7) !important;
 }
 
 body {
   padding-top: 50px;
   padding-bottom: 40px;
-  background: rgb(214,214,214); /* Old browsers */
-  background: -moz-radial-gradient(center, ellipse cover,  rgba(214,214,214,1) 0%, rgba(186,186,186,1) 100%); /* FF3.6+ */
-  background: -webkit-radial-gradient(center, ellipse cover,  rgba(214,214,214,1) 0%,rgba(186,186,186,1) 100%); /* Chrome10+,Safari5.1+ */
-  background: -o-radial-gradient(center, ellipse cover,  rgba(214,214,214,1) 0%,rgba(186,186,186,1) 100%); /* Opera 12+ */
-  background: -ms-radial-gradient(center, ellipse cover,  rgba(214,214,214,1) 0%,rgba(186,186,186,1) 100%); /* IE10+ */
-  background: radial-gradient(ellipse at center,  rgba(214,214,214,1) 0%,rgba(186,186,186,1) 100%); /* W3C */
+  background: rgb(255,255,255); /* Old browsers */
+  background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%, rgba(227,227,227,1) 100%); /* FF3.6+ */
+  background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(227,227,227,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(227,227,227,1) 100%); /* Opera 12+ */
+  background: -ms-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(227,227,227,1) 100%); /* IE10+ */
+  background: radial-gradient(ellipse at center,  rgba(255,255,255,1) 0%,rgba(227,227,227,1) 100%); /* W3C */
   background-repeat: no-repeat;
 }
 div.row-fluid {
