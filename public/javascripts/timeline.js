@@ -47,13 +47,16 @@ $(function() {
       }).text(data.title).appendTo($imgTitle);
       var $editBtn = $('<button></button>', {
         'class': 'btn btn-primary'
-      }).text('Add Bubbles').appendTo($ctrlWrapper);
+      }).html('<i class="icon-comments icon-white"></i>').appendTo($ctrlWrapper);
       var $renewBtn = $('<button></button>', {
         'class': 'btn btn-info'
-      }).text('Renew').appendTo($ctrlWrapper);
+      }).html('<i class="icon-undo icon-white"></i>').appendTo($ctrlWrapper);
       var $delBtn = $('<button></button>', {
         'class': 'btn btn-danger'
-      }).text('Delete').appendTo($ctrlWrapper);
+      }).html('<i class="icon-trash icon-white"></i>').appendTo($ctrlWrapper);
+      var $starBtn = $('<button></button>', {
+        'class': 'btn btn-warning'
+      }).html('<i class="icon-star icon-white"></i>').appendTo($ctrlWrapper);
     }
     console.log(entries);
   }).fail(function() {
