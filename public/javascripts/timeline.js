@@ -45,18 +45,20 @@ $(function() {
       var $title = $('<span></span>', {
         'class': 'title'
       }).text(data.title).appendTo($imgTitle);
+      var $btnBar = $('<div></div>', {'class': 'btn-toolbar'}).appendTo($ctrlWrapper);
+      var $btnGroup = $('<div></div>', {'class': 'btn-group'}).appendTo($btnBar);
       var $editBtn = $('<button></button>', {
         'class': 'btn btn-primary'
-      }).html('<i class="icon-comments icon-white"></i>').appendTo($ctrlWrapper);
+      }).html('<i class="icon-comments icon-white icon-large"></i>').appendTo($btnGroup);
       var $renewBtn = $('<button></button>', {
         'class': 'btn btn-info'
-      }).html('<i class="icon-undo icon-white"></i>').appendTo($ctrlWrapper);
+      }).html('<i class="icon-code-fork icon-white icon-large"></i>').appendTo($btnGroup);
       var $delBtn = $('<button></button>', {
         'class': 'btn btn-danger'
-      }).html('<i class="icon-trash icon-white"></i>').appendTo($ctrlWrapper);
+      }).html('<i class="icon-trash icon-white icon-large"></i>').appendTo($btnGroup);
       var $starBtn = $('<button></button>', {
         'class': 'btn btn-warning'
-      }).html('<i class="icon-star icon-white"></i>').appendTo($ctrlWrapper);
+      }).html('<i class="icon-star icon-white icon-large"></i>').appendTo($btnGroup);
     }
     console.log(entries);
   }).fail(function() {
