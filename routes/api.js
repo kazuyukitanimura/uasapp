@@ -17,14 +17,31 @@ exports.timeline = function(req, res) {
   var mapArg = {
     timeOffset: timeOffset,
     timeRadix: timeRadix,
-    gt_id: req.query.gt_id || null,
-    lt_id: req.query.lt_id || null
+    gt_id: req.query.gt_id,
+    lt_id: req.query.lt_id
   };
   var reduceArg = {
     start: parseInt(req.query.start, 10) || 0,
     end: parseInt(req.query.end, 10) || 10
   };
-  db.mapreduce.add(bucket).map(function(value, keydata, arg) {
+  var key_filters = [];
+  //var gt_id = req.query.gt_id;
+  //var lt_id = req.query.lt_id;
+  //if (gt_id) {
+  //   gt_id = gt_id.split('-');
+  //   key_filters.push(['or', [['tokenize', '-', 1], ['greater_than', gt_id[0]]], [['tokenize', '-', 2], ['greater_than', gt_id[1]]]]);
+  //}
+  //if (lt_id) {
+  //}
+  var inputs = bucket;
+  if (key_filters.length > 0) {
+    inputs = {
+      bucket: bucket,
+      key_filters: key_filters
+    };
+  }
+  console.log(inputs);
+  db.mapreduce.add(inputs).map(function(value, keydata, arg) {
     var timeOffset = arg.timeOffset;
     var timeRadix = arg.timeRadix;
     var splitStr = '-';
