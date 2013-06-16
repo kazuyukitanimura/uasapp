@@ -16,7 +16,9 @@ var getDuration = exports.getDuration = function(img) {
 exports.timeline = function(req, res) {
   var mapArg = {
     timeOffset: timeOffset,
-    timeRadix: timeRadix
+    timeRadix: timeRadix,
+    gt_id: req.query.gt_id || null,
+    lt_id: req.query.lt_id || null
   };
   var reduceArg = {
     start: parseInt(req.query.start, 10) || 0,
@@ -25,15 +27,33 @@ exports.timeline = function(req, res) {
   db.mapreduce.add(bucket).map(function(value, keydata, arg) {
     var timeOffset = arg.timeOffset;
     var timeRadix = arg.timeRadix;
-    var timeSequenceMachine = value.key.split('-');
-    var time = parseInt(timeSequenceMachine[0], timeRadix) + timeOffset;
-    var sequence = parseInt(timeSequenceMachine[1], timeRadix);
-    return [{
+    var splitStr = '-';
+    var id = value.key.split(splitStr);
+    var time = parseInt(id[0], timeRadix) + timeOffset;
+    var sequence = parseInt(id[1], timeRadix);
+    var result = [{
       id: value.key,
       time: time,
       sequence: sequence,
       data: Riak.mapValuesJson(value)[0]
     }];
+    if (arg.gt_id) {
+      var gt_id = arg.gt_id.split(splitStr);
+      var gt_time = parseInt(gt_id[0], timeRadix) + timeOffset;
+      var gt_sequence = parseInt(gt_id[1], timeRadix);
+      if (time <= gt_time && sequence <= gt_sequence) {
+        result = [];
+      }
+    }
+    if (arg.lt_id) {
+      var lt_id = arg.lt_id.split(splitStr);
+      var lt_time = parseInt(lt_id[0], timeRadix) + timeOffset;
+      var lt_sequence = parseInt(lt_id[1], timeRadix);
+      if (time >= lt_time && sequence >= lt_sequence) {
+        result = [];
+      }
+    }
+    return result;
   },
   mapArg).reduce(function(valueList, arg) {
     // TODO This is O(n log n). It can be O(n) maybe.
@@ -47,10 +67,10 @@ exports.timeline = function(req, res) {
       res.send(500);
       throw err;
     } else {
-      console.log(req.session);
-      req.session = req.session || {};
-      req.session.newestId = data[0].id;
-      req.session.oldestId = data[data.length - 1].id;
+      //console.log(req.session);
+      //req.session = req.session || {};
+      //req.session.newestId = data[0].id;
+      //req.session.oldestId = data[data.length - 1].id;
       res.send(data);
     }
   });
