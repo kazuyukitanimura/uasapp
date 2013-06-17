@@ -14,15 +14,18 @@ var getDuration = exports.getDuration = function(img) {
 };
 
 exports.timeline = function(req, res) {
+  var gt_id = req.query.gt_id;
+  var lt_id = req.query.lt_id;
   var mapArg = {
     timeOffset: timeOffset,
     timeRadix: timeRadix,
-    gt_id: req.query.gt_id,
-    lt_id: req.query.lt_id
+    gt_id: gt_id,
+    lt_id: lt_id
   };
   var reduceArg = {
-    start: parseInt(req.query.start, 10) || 0,
-    end: parseInt(req.query.end, 10) || 10
+    count: parseInt(req.query.count, 10) || 5,
+    gt_id: gt_id,
+    lt_id: lt_id
   };
   var key_filters = [];
   //var gt_id = req.query.gt_id;
@@ -34,13 +37,13 @@ exports.timeline = function(req, res) {
   //if (lt_id) {
   //}
   var inputs = bucket;
-  if (key_filters.length > 0) {
-    inputs = {
-      bucket: bucket,
-      key_filters: key_filters
-    };
-  }
-  console.log(inputs);
+  //if (key_filters.length > 0) {
+  //  inputs = {
+  //    bucket: bucket,
+  //    key_filters: key_filters
+  //  };
+  //}
+  //console.log(inputs);
   db.mapreduce.add(inputs).map(function(value, keydata, arg) {
     var timeOffset = arg.timeOffset;
     var timeRadix = arg.timeRadix;
@@ -73,10 +76,16 @@ exports.timeline = function(req, res) {
     return result;
   },
   mapArg).reduce(function(valueList, arg) {
+    var start = 0;
+    var end = arg.count;
+    if (arg.gt_id && !arg.lt_id) {
+      start = Math.max(0, valueList.length - end);
+      end = valueList.length;
+    }
     // TODO This is O(n log n). It can be O(n) maybe.
     return valueList.sort(function(a, b) {
       return (b.time - a.time) || (b.sequence - a.sequence);
-    }).slice(arg.start, arg.end);
+    }).slice(start, end);
   },
   reduceArg).run(function(err, data) {
     console.log(data);
