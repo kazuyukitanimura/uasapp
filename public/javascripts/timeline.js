@@ -91,6 +91,7 @@ $(function() {
       $('#error-message').show();
     });
   };
-  setInterval(update.bind(true), updateInterval);
+  update(true);
+  setInterval(update.bind(this, true), updateInterval);
 });
 
