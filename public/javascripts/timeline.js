@@ -3,6 +3,10 @@ $(function() {
     window.scrollTo(0, 1); // hide the scroll bar for iPhone
   },
   200);
+  var $window = $(window);
+  var $document = $(document);
+  var maxEntries = 5;
+  var updateRange = 100;
   var updateInterval = 5000;
   var API_BASE_URL = '/api/v1/';
   var funcInterval = function(func, duration) {
@@ -14,7 +18,9 @@ $(function() {
     var $children = $timelineContainer.children();
     var newestId = $children.first().attr('id');
     var oldestId = $children.last().attr('id');
-    var params = {};
+    var params = {
+      count: maxEntries
+    };
     if (directionUp && newestId) {
       params.gt_id = newestId;
     }
@@ -35,9 +41,12 @@ $(function() {
           'id': entry.id,
           'class': 'span12 clearfix'
         });
+        $children = $timelineContainer.children();
         if (directionUp) {
+          $children.slice(maxEntries - 1).remove();
           $entry.prependTo($timelineContainer);
         } else {
+          $children.slice(0, Math.max(0, $children.length - maxEntries + 1)).remove();
           $entry.appendTo($timelineContainer);
         }
         var $entryInner = $('<div></div>', {
@@ -92,6 +101,12 @@ $(function() {
     });
   };
   update(true);
-  setInterval(update.bind(this, true), updateInterval);
+  setInterval(function() {
+    if ($window.scrollTop() < updateRange) {
+      update(true);
+    } else if ($document.height() - $window.height() - $window.scrollTop() <= updateRange) {
+      update(false);
+    }
+  }, updateInterval);
 });
 
