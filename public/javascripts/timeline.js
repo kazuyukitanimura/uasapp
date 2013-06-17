@@ -5,21 +5,28 @@ $(function() {
   200);
   var updateInterval = 5000;
   var API_BASE_URL = '/api/v1/';
-  var newestId = null;
-  var oldestId = null;
-  var update = function() {
+  var funcInterval = function(func, duration) {
+    setInterval(func.bind(this), duration);
+  };
+  var update = function(directionUp) {
     var getUrl = API_BASE_URL + 'timeline';
+    var $timelineContainer = $('#timeline');
+    var $children = $timelineContainer.children();
+    var newestId = $children.first().attr('id');
+    var oldestId = $children.last().attr('id');
     var params = {};
-    var gt_id = newestId;
-    var lt_id = oldestId;
-    if (gt_id) {
-      params.gt_id = gt_id;
+    if (directionUp && newestId) {
+      params.gt_id = newestId;
     }
-    if (lt_id) {
-      params.lt_id = lt_id;
+    if (!directionUp && oldestId) {
+      params.lt_id = oldestId;
     }
-    $.get([getUrl, $.param(params)].join('?')).done(function(entries) {
-      var $timelineContainer = $('#timeline');
+    var param = $.param(params);
+    getUrl += params ? '?' + param: '';
+    $.get(getUrl).done(function(entries) {
+      if (directionUp) {
+        entries = entries.reverse();
+      }
       for (var i = 0, l = entries.length; i < l; i++) {
         var entry = entries[i];
         var data = entry.data;
@@ -27,7 +34,12 @@ $(function() {
         var $entry = $('<li></li>', {
           'id': entry.id,
           'class': 'span12 clearfix'
-        }).appendTo($timelineContainer);
+        });
+        if (directionUp) {
+          $entry.prependTo($timelineContainer);
+        } else {
+          $entry.appendTo($timelineContainer);
+        }
         var $entryInner = $('<div></div>', {
           'class': 'thumbnail clearfix'
         }).appendTo($entry);
@@ -43,12 +55,8 @@ $(function() {
             'class': 'bubble animated bounce',
             'style': ['top:', bubble.y, '%; left:', bubble.x, '%; display: none;'].join('')
           }).text(bubble.text).appendTo($imgWrapper);
-          setTimeout($bubble.hide.bind($bubble, 0, function(duration) {
-            setInterval(this.hide.bind(this), duration);
-          }.bind($bubble, data.duration)), bubble.elapsed + bubble.rmsec);
-          setTimeout($bubble.show.bind($bubble, 0, function(duration) {
-            setInterval(this.show.bind(this), duration);
-          }.bind($bubble, data.duration)), bubble.elapsed);
+          setTimeout($bubble.hide.bind($bubble, 0, funcInterval.bind($bubble, $bubble.hide, data.duration)), bubble.elapsed + bubble.rmsec);
+          setTimeout($bubble.show.bind($bubble, 0, funcInterval.bind($bubble, $bubble.show, data.duration)), bubble.elapsed);
         }
         var $ctrlWrapper = $('<div></div>', {
           'class': 'ctrl-wrapper pull-left caption'
@@ -83,6 +91,6 @@ $(function() {
       $('#error-message').show();
     });
   };
-  setInterval(update, updateInterval);
+  setInterval(update.bind(true), updateInterval);
 });
 
