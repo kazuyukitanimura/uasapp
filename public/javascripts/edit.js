@@ -37,6 +37,16 @@ $(function() {
     var x = rand(90);
     var y = rand(90);
     var $bubble = $(['<div draggable="true" class="bubble animated bounce" style="top:', y, '%; left:', x, '%;">', text, '</div>'].join(''));
+    $bubble.draggable({
+      stop: function(e, ui) {
+        var $this = $(this);
+        var $parent = $this.parent();
+        var stopPos = $this.position();
+        var topPercent = Math.min(100, stopPos.top / $parent.height() * 100);
+        var leftPercent = Math.min(100, stopPos.left / $parent.width() * 100);
+        $this.css('top', topPercent.toFixed().toString() + '%').css('left', leftPercent.toFixed().toString() + '%');
+      }
+    });
     var elapsed = (e.timeStamp - startTime) % duration;
     var $bubbleEntry = $([
       '<div class="form-inline bubble-entry">',
