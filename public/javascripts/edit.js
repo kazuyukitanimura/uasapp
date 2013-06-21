@@ -36,7 +36,7 @@ $(function() {
     }
     var x = rand(90);
     var y = rand(90);
-    var $bubble = $(['<div class="bubble animated bounce" style="top:', y, '%; left:', x, '%;">', text, '</div>'].join(''));
+    var $bubble = $(['<div draggable="true" class="bubble animated bounce" style="top:', y, '%; left:', x, '%;">', text, '</div>'].join(''));
     var elapsed = (e.timeStamp - startTime) % duration;
     var $bubbleEntry = $([
       '<div class="form-inline bubble-entry">',
