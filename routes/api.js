@@ -84,9 +84,22 @@ exports.timeline = function(req, res) {
       end = valueList.length;
     }
     // TODO This is O(n log n). It can be O(n) maybe.
-    return valueList.sort(function(a, b) {
+    var res = valueList.sort(function(a, b) {
       return (b.time - a.time) || (b.sequence - a.sequence);
-    }).slice(start, end);
+    });
+    var dupList = [];
+    for (var i = 0, l = Math.min(res.length, end); i < l; i++) {
+      var r = res[i];
+      if (dupList.indexOf(r.id) > -1) {
+        res.splice(i--, 0); // delete the dup item and decrement i
+      } else {
+        var links = r.links;
+        for (var j = links.length; j--;) {
+          dupList.push(links[j].key);
+        }
+      }
+    }
+    return res.slice(start, end);
   },
   reduceArg).run(function(err, data) {
     console.log(data);
