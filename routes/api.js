@@ -55,6 +55,7 @@ exports.timeline = function(req, res) {
       id: value.key,
       time: time,
       sequence: sequence,
+      links: value.values[0].metadata.Links,
       data: Riak.mapValuesJson(value)[0]
     }];
     if (arg.gt_id) {
