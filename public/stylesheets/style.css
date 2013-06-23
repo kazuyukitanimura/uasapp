@@ -89,6 +89,13 @@ div.bubble {
   user-select: none;
 }
 
+button#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 0px;
+  margin: 0px -7px;
+}
+
 /* Prevent the text contents of draggable elements from being selectable. */
 [draggable] {
   -webkit-user-select: none;

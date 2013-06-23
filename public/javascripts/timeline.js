@@ -108,5 +108,24 @@ $(function() {
       update(false);
     }
   }, updateInterval);
+
+  /**
+   * Back To Top Button
+   */
+  var $backToTopBtn = $('#back-to-top');
+  $backToTopBtn.click(function(e){
+    e.preventDefault();
+    $('body,html').animate({
+      scrollTop: 0
+    }, 800);
+    return false;
+  });
+  $window.scroll(function(){
+    if ($window.scrollTop() < updateRange) {
+      $backToTopBtn.hide();
+    } else {
+      $backToTopBtn.show();
+    }
+  });
 });
 
