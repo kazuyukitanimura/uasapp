@@ -103,10 +103,15 @@ exports.timeline = function(req, res) {
   });
 };
 
+exports.update = function(req, res) {
+};
+
 exports.index = function(req, res) {
   var job = req.params.job;
   if (job === 'timeline') {
     exports.timeline(req, res);
+  } else if (job === 'update') {
+    exports.update(req, res);
   } else {
     res.send(404);
   }
