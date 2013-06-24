@@ -7,10 +7,17 @@ var config = require('../config');
 var bucket = config.bubbleBucket;
 var timeOffset = config.timeOffset;
 var timeRadix = config.timeRadix;
+var Flake = require('../lib/flake');
+var flake = new Flake();
 
 var getDuration = exports.getDuration = function(img) {
   var durationMatch = /\w+-\d+-\d+-\d+-(\d+)\.\w+/.exec(img); // digest_height_width_size_duration.gif
   return durationMatch ? durationMatch[1] : null;
+};
+
+var job2method = {
+  timeline: 'GET',
+  update: 'POST'
 };
 
 exports.timeline = function(req, res) {
@@ -117,14 +124,63 @@ exports.timeline = function(req, res) {
 };
 
 exports.update = function(req, res) {
+  // TODO check the order of req.body
+  var data = req.body;
+  console.log(data);
+  // TODO check if the img url really exists
+  var duration = getDuration(data.url);
+  if (duration) {
+    data.duration = parseInt(duration, 10);
+    if (data.bubbles) {
+      for (var i = data.bubbles.length; i--;) {
+        var bubble = data.bubbles[i];
+        bubble.elapsed = parseInt(bubble.elapsed, 10);
+        bubble.rmsec = parseInt(bubble.rmsec, 10);
+        bubble.x = parseInt(bubble.x, 10);
+        bubble.y = parseInt(bubble.y, 10);
+      }
+    }
+    var saveFunc = function(data, res, links) {
+      db.save(bucket, flake.next(), data, function(err, data, meta) {
+        console.log(data);
+        console.log(meta);
+        if (err) {
+          res.send(500);
+          throw err;
+        } else {
+          res.send(200);
+        }
+      });
+    };
+    if (data.onto) {
+      db.get(bucket, data.onto, function(err, ontodata, meta) {
+        if (err) {
+          res.send(500);
+          throw err;
+        } else {
+          if (meta.statusCode === 300) {
+            for (var obj in ontodata) {
+              // TODO reconcile siblings
+            }
+          }
+          data.concat(ontodata);
+          saveFunc(data, res, links);
+        }
+      });
+    } else {
+      saveFunc(data, res);
+    }
+  } else {
+    res.send(500);
+  }
 };
 
 exports.index = function(req, res) {
-  var job = req.params.job;
-  if (job === 'timeline') {
-    exports.timeline(req, res);
-  } else if (job === 'update') {
-    exports.update(req, res);
+  var job = req.params.job.toLowerCase();
+  var method = req.method.toUpperCase();
+  var handler = exports[job];
+  if (job2method[job] === method && handler) {
+    handler(req, res);
   } else {
     res.send(404);
   }

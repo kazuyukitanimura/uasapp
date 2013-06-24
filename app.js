@@ -41,7 +41,7 @@ app.get('/search', search.index);
 app.get('/edit', edit.get);
 app.post('/edit', edit.post);
 app.get('/timeline', timeline.index);
-app.get('/api/v1/:job', api.index);
+app.all('/api/v1/:job', api.index);
 app.get('/robots.txt', others.robots);
 app.get('/humans.txt', others.humans);
 
